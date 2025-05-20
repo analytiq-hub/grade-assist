@@ -1,45 +1,41 @@
 import axios from 'axios';
 
 // DocRouter API endpoints
-const API_BASE_URL = 'https://app.docrouter.ai/fastapi';
+const DEFAULT_API_BASE_URL = 'https://app.docrouter.ai/fastapi';
 
-// Get API token from environment variable (Vite convention: VITE_DOCROUTER_API_TOKEN)
-// Fallback to localStorage for runtime overrides (e.g., user input in settings)
-const ENV_API_TOKEN = import.meta.env.VITE_DOCROUTER_API_TOKEN as string | undefined;
-
-// Get organization ID from environment variable (Vite convention: VITE_DOCROUTER_ORG_ID)
-// Fallback to localStorage for runtime overrides
-const ENV_ORG_ID = import.meta.env.VITE_DOCROUTER_ORG_ID as string | undefined;
-
-// Set the DocRouter API token (overrides env, persists in localStorage)
+// Set the DocRouter API token (persists in localStorage)
 export const setDocRouterToken = (token: string) => {
   localStorage.setItem('docrouter_token', token);
 };
 
-// Get the saved DocRouter API token, preferring env variable if set
+// Get the saved DocRouter API token from localStorage
 export const getDocRouterToken = (): string => {
-  if (ENV_API_TOKEN && ENV_API_TOKEN.length > 0) {
-    return ENV_API_TOKEN;
-  }
   return localStorage.getItem('docrouter_token') || '';
 };
 
-// Set organization ID (overrides env, persists in localStorage)
+// Set organization ID (persists in localStorage)
 export const setDocRouterOrgId = (orgId: string) => {
   localStorage.setItem('docrouter_org_id', orgId);
 };
 
-// Get organization ID from env or localStorage
+// Get organization ID from localStorage
 export const getDocRouterOrgId = (): string => {
-  if (ENV_ORG_ID && ENV_ORG_ID.length > 0) {
-    return ENV_ORG_ID;
-  }
   return localStorage.getItem('docrouter_org_id') || '';
+};
+
+// Set the DocRouter API base URL (persists in localStorage)
+export const setDocRouterApiBaseUrl = (url: string) => {
+  localStorage.setItem('docrouter_api_base_url', url);
+};
+
+// Get the DocRouter API base URL from localStorage, fallback to default
+export const getDocRouterApiBaseUrl = (): string => {
+  return localStorage.getItem('docrouter_api_base_url') || DEFAULT_API_BASE_URL;
 };
 
 // API client with authentication
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: getDocRouterApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -182,6 +178,8 @@ export default {
   getDocRouterToken,
   setDocRouterOrgId,
   getDocRouterOrgId,
+  setDocRouterApiBaseUrl,
+  getDocRouterApiBaseUrl,
   uploadDocument,
   getDocuments,
   getDocument,

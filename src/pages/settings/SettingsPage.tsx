@@ -2,41 +2,59 @@ import React, { useState, useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { setAuthToken, testDocRouterConnection } from '../../services/openapi-client';
-import { getDocRouterToken, setDocRouterToken, getDocRouterOrgId } from '../../services/docRouterService';
+import {
+  getDocRouterToken,
+  setDocRouterToken,
+  getDocRouterOrgId,
+  setDocRouterOrgId,
+  getDocRouterApiBaseUrl,
+  setDocRouterApiBaseUrl,
+} from '../../services/docRouterService';
 
 const SettingsPage: React.FC = () => {
   const [apiToken, setApiToken] = useState('');
+  const [orgId, setOrgId] = useState('');
+  const [apiBaseUrl, setApiBaseUrl] = useState('');
   const [showTokenError, setShowTokenError] = useState(false);
+  const [showOrgIdError, setShowOrgIdError] = useState(false);
+  const [showApiBaseUrlError, setShowApiBaseUrlError] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<'success' | 'error' | null>(null);
 
   useEffect(() => {
-    // Load the saved token
-    const savedToken = getDocRouterToken();
-    if (savedToken) {
-      setApiToken(savedToken);
-    }
+    setApiToken(getDocRouterToken());
+    setOrgId(getDocRouterOrgId());
+    setApiBaseUrl(getDocRouterApiBaseUrl());
   }, []);
 
-  const handleSaveToken = async (e: React.FormEvent) => {
+  const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Basic validation
+    let hasError = false;
     if (!apiToken.trim()) {
       setShowTokenError(true);
-      return;
+      hasError = true;
+    } else {
+      setShowTokenError(false);
     }
-    
-    setShowTokenError(false);
-    
+    if (!orgId.trim()) {
+      setShowOrgIdError(true);
+      hasError = true;
+    } else {
+      setShowOrgIdError(false);
+    }
+    if (!apiBaseUrl.trim()) {
+      setShowApiBaseUrlError(true);
+      hasError = true;
+    } else {
+      setShowApiBaseUrlError(false);
+    }
+    if (hasError) return;
     try {
-      // In a real app, you would validate the token here
-      // For this demo, we'll just save it
-      await new Promise(resolve => setTimeout(resolve, 1000)); // simulate API call
-      
       setDocRouterToken(apiToken);
+      setDocRouterOrgId(orgId);
+      setDocRouterApiBaseUrl(apiBaseUrl);
     } catch (error) {
-      console.error('Error saving token:', error);
+      console.error('Error saving settings:', error);
     }
   };
 
@@ -44,12 +62,9 @@ const SettingsPage: React.FC = () => {
     setIsTesting(true);
     setTestResult(null);
     setAuthToken(apiToken);
-    const orgId = getDocRouterOrgId();
-    if (!orgId) {
-      setTestResult('error');
-      setIsTesting(false);
-      return;
-    }
+    // testDocRouterConnection uses the current base URL from localStorage, so update it first
+    setDocRouterApiBaseUrl(apiBaseUrl);
+    setDocRouterOrgId(orgId);
     const ok = await testDocRouterConnection(orgId);
     setTestResult(ok ? 'success' : 'error');
     setIsTesting(false);
@@ -76,7 +91,7 @@ const SettingsPage: React.FC = () => {
                 <AlertCircle size={20} className="text-blue-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="text-blue-800">
-                    You'll need to provide a DocRouter API token to use the grading features. 
+                    You'll need to provide a DocRouter API token, organization ID, and API URL to use the grading features. 
                     <a 
                       href="https://github.com/analytiq-hub/doc-router" 
                       target="_blank" 
@@ -89,8 +104,8 @@ const SettingsPage: React.FC = () => {
                 </div>
               </div>
               
-              <form onSubmit={handleSaveToken}>
-                <div className="form-control">
+              <form onSubmit={handleSaveSettings}>
+                <div className="form-control mb-4">
                   <label htmlFor="apiToken" className="form-label">DocRouter API Token</label>
                   <input
                     id="apiToken"
@@ -104,8 +119,41 @@ const SettingsPage: React.FC = () => {
                     <p className="mt-1 text-sm text-red-600">Please enter a valid API token</p>
                   )}
                 </div>
-                
+                <div className="form-control mb-4">
+                  <label htmlFor="orgId" className="form-label">Organization ID</label>
+                  <input
+                    id="orgId"
+                    type="text"
+                    value={orgId}
+                    onChange={(e) => setOrgId(e.target.value)}
+                    className={`form-input ${showOrgIdError ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
+                    placeholder="Your DocRouter Organization ID"
+                  />
+                  {showOrgIdError && (
+                    <p className="mt-1 text-sm text-red-600">Please enter a valid Organization ID</p>
+                  )}
+                </div>
+                <div className="form-control mb-4">
+                  <label htmlFor="apiBaseUrl" className="form-label">DocRouter FastAPI URL</label>
+                  <input
+                    id="apiBaseUrl"
+                    type="text"
+                    value={apiBaseUrl}
+                    onChange={(e) => setApiBaseUrl(e.target.value)}
+                    className={`form-input ${showApiBaseUrlError ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
+                    placeholder="https://app.docrouter.ai/fastapi"
+                  />
+                  {showApiBaseUrlError && (
+                    <p className="mt-1 text-sm text-red-600">Please enter a valid API URL</p>
+                  )}
+                </div>
                 <div className="mt-6 flex items-center gap-4">
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                  >
+                    Save Settings
+                  </button>
                   <button
                     type="button"
                     onClick={handleTestConnection}
@@ -128,7 +176,7 @@ const SettingsPage: React.FC = () => {
                     <span className="text-green-600 text-sm">Connection successful!</span>
                   )}
                   {testResult === 'error' && (
-                    <span className="text-red-600 text-sm">Connection failed. Check your token.</span>
+                    <span className="text-red-600 text-sm">Connection failed. Check your settings.</span>
                   )}
                 </div>
               </form>

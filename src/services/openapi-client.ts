@@ -6,8 +6,7 @@
 
 import createClient from 'openapi-fetch';
 import type { paths } from '../../types/openapi';
-
-const API_BASE_URL = 'https://app.docrouter.ai/fastapi';
+import { getDocRouterApiBaseUrl } from './docRouterService';
 
 let authToken: string | undefined = undefined;
 
@@ -25,7 +24,7 @@ const fetchWithAuth: typeof fetch = (input, init = {}) => {
 };
 
 const client = createClient<paths>({
-  baseUrl: API_BASE_URL,
+  baseUrl: getDocRouterApiBaseUrl(),
   fetch: fetchWithAuth,
 });
 
