@@ -273,15 +273,15 @@ const SettingsPage: React.FC = () => {
               </div>
               
               <div>
-                <h3 className="font-medium text-gray-900 mb-2">Creating Effective Schemas</h3>
+                <h3 className="font-medium text-gray-900 mb-2">Creating Effective Rubrics</h3>
                 <p className="text-sm text-gray-600 mb-3">
-                  A good grading schema helps the AI understand exactly what to look for in student papers.
+                  A good grading rubric helps the AI understand exactly what to look for in student papers.
                 </p>
                 <a 
                   href="#" 
                   className="text-sm text-blue-600 hover:text-blue-800 font-medium"
                 >
-                  Schema best practices →
+                  Rubric best practices →
                 </a>
               </div>
               

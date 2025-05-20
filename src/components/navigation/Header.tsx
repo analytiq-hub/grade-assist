@@ -13,9 +13,9 @@ const Header: React.FC = () => {
   const getPageTitle = () => {
     const path = location.pathname;
     if (path.includes('/dashboard')) return 'Dashboard';
-    if (path.includes('/schemas')) {
-      if (path.includes('/schemas/')) return 'Schema Details';
-      return 'Grading Schemas';
+    if (path.includes('/rubrics')) {
+      if (path.includes('/rubrics/')) return 'Rubric Details';
+      return 'Grading Rubrics';
     }
     if (path.includes('/documents')) {
       if (path.includes('/documents/')) return 'Document Details';

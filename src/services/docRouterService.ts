@@ -60,7 +60,7 @@ export interface Document {
   size: number;
 }
 
-export interface Schema {
+export interface Rubric {
   id: string;
   name: string;
   description: string;
@@ -109,35 +109,35 @@ export const getDocument = async (id: string): Promise<Document> => {
   return response.data;
 };
 
-// Create a grading schema
-export const createSchema = async (schema: Omit<Schema, 'id' | 'created_at' | 'updated_at'>): Promise<Schema> => {
-  const response = await apiClient.post('/schemas', schema);
+// Create a grading rubric
+export const createRubric = async (rubric: Omit<Rubric, 'id' | 'created_at' | 'updated_at'>): Promise<Rubric> => {
+  const response = await apiClient.post('/rubrics', rubric);
   return response.data;
 };
 
-// Get all schemas
-export const getSchemas = async (): Promise<Schema[]> => {
-  const response = await apiClient.get('/schemas');
+// Get all rubrics
+export const getRubrics = async (): Promise<Rubric[]> => {
+  const response = await apiClient.get('/rubrics');
   return response.data;
 };
 
-// Get a specific schema
-export const getSchema = async (id: string): Promise<Schema> => {
-  const response = await apiClient.get(`/schemas/${id}`);
+// Get a specific rubric
+export const getRubric = async (id: string): Promise<Rubric> => {
+  const response = await apiClient.get(`/rubrics/${id}`);
   return response.data;
 };
 
-// Update a schema
-export const updateSchema = async (id: string, schema: Partial<Schema>): Promise<Schema> => {
-  const response = await apiClient.put(`/schemas/${id}`, schema);
+// Update a rubric
+export const updateRubric = async (id: string, rubric: Partial<Rubric>): Promise<Rubric> => {
+  const response = await apiClient.put(`/rubrics/${id}`, rubric);
   return response.data;
 };
 
-// Grade a document using a schema
-export const gradeDocument = async (documentId: string, schemaId: string): Promise<GradingResult> => {
+// Grade a document using a rubric
+export const gradeDocument = async (documentId: string, rubricId: string): Promise<GradingResult> => {
   const response = await apiClient.post('/grading', {
     document_id: documentId,
-    schema_id: schemaId,
+    schema_id: rubricId,
   });
   return response.data;
 };
@@ -180,10 +180,10 @@ export default {
   uploadDocument,
   getDocuments,
   getDocument,
-  createSchema,
-  getSchemas,
-  getSchema,
-  updateSchema,
+  createRubric,
+  getRubrics,
+  getRubric,
+  updateRubric,
   gradeDocument,
   getGradingResult,
   updateGradingResult,

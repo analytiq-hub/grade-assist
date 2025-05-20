@@ -1,81 +1,81 @@
 import { create } from 'zustand';
-import { Schema, getSchemas, createSchema, getSchema, updateSchema } from '../services/docRouterService';
+import { Rubric, getRubrics, createRubric, getRubric, updateRubric } from '../services/docRouterService';
 
-interface SchemaState {
-  schemas: Schema[];
-  currentSchema: Schema | null;
+interface RubricState {
+  rubrics: Rubric[];
+  currentRubric: Rubric | null;
   loading: boolean;
   error: string | null;
   
   // Actions
-  fetchSchemas: () => Promise<void>;
-  fetchSchema: (id: string) => Promise<Schema>;
-  createNewSchema: (data: Omit<Schema, 'id' | 'created_at' | 'updated_at'>) => Promise<Schema>;
-  updateExistingSchema: (id: string, data: Partial<Schema>) => Promise<Schema>;
+  fetchRubrics: () => Promise<void>;
+  fetchRubric: (id: string) => Promise<Rubric>;
+  createNewRubric: (data: Omit<Rubric, 'id' | 'created_at' | 'updated_at'>) => Promise<Rubric>;
+  updateExistingRubric: (id: string, data: Partial<Rubric>) => Promise<Rubric>;
 }
 
-const useSchemaStore = create<SchemaState>((set, get) => ({
-  schemas: [],
-  currentSchema: null,
+const useRubricStore = create<RubricState>((set, get) => ({
+  rubrics: [],
+  currentRubric: null,
   loading: false,
   error: null,
   
-  fetchSchemas: async () => {
+  fetchRubrics: async () => {
     set({ loading: true, error: null });
     try {
-      const schemas = await getSchemas();
-      set({ schemas, loading: false });
+      const rubrics = await getRubrics();
+      set({ rubrics, loading: false });
     } catch (error) {
-      console.error('Error fetching schemas:', error);
-      set({ error: 'Failed to load schemas', loading: false });
+      console.error('Error fetching rubrics:', error);
+      set({ error: 'Failed to load rubrics', loading: false });
     }
   },
   
-  fetchSchema: async (id: string) => {
+  fetchRubric: async (id: string) => {
     set({ loading: true, error: null });
     try {
-      const schema = await getSchema(id);
-      set({ currentSchema: schema, loading: false });
-      return schema;
+      const rubric = await getRubric(id);
+      set({ currentRubric: rubric, loading: false });
+      return rubric;
     } catch (error) {
-      console.error('Error fetching schema:', error);
-      set({ error: 'Failed to load schema', loading: false });
+      console.error('Error fetching rubric:', error);
+      set({ error: 'Failed to load rubric', loading: false });
       throw error;
     }
   },
   
-  createNewSchema: async (data) => {
+  createNewRubric: async (data) => {
     set({ loading: true, error: null });
     try {
-      const newSchema = await createSchema(data);
+      const newRubric = await createRubric(data);
       set((state) => ({ 
-        schemas: [...state.schemas, newSchema],
+        rubrics: [...state.rubrics, newRubric],
         loading: false 
       }));
-      return newSchema;
+      return newRubric;
     } catch (error) {
-      console.error('Error creating schema:', error);
-      set({ error: 'Failed to create schema', loading: false });
+      console.error('Error creating rubric:', error);
+      set({ error: 'Failed to create rubric', loading: false });
       throw error;
     }
   },
   
-  updateExistingSchema: async (id, data) => {
+  updateExistingRubric: async (id, data) => {
     set({ loading: true, error: null });
     try {
-      const updatedSchema = await updateSchema(id, data);
+      const updatedRubric = await updateRubric(id, data);
       set((state) => ({ 
-        schemas: state.schemas.map(schema => schema.id === id ? updatedSchema : schema),
-        currentSchema: updatedSchema,
+        rubrics: state.rubrics.map(rubric => rubric.id === id ? updatedRubric : rubric),
+        currentRubric: updatedRubric,
         loading: false 
       }));
-      return updatedSchema;
+      return updatedRubric;
     } catch (error) {
-      console.error('Error updating schema:', error);
-      set({ error: 'Failed to update schema', loading: false });
+      console.error('Error updating rubric:', error);
+      set({ error: 'Failed to update rubric', loading: false });
       throw error;
     }
   },
 }));
 
-export default useSchemaStore;
+export default useRubricStore;

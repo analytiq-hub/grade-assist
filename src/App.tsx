@@ -10,8 +10,8 @@ import AuthLayout from './layouts/AuthLayout';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
-import SchemasPage from './pages/schemas/SchemasPage';
-import SchemaDetailPage from './pages/schemas/SchemaDetailPage';
+import RubricsPage from './pages/schemas/SchemasPage';
+import RubricDetailPage from './pages/schemas/SchemaDetailPage';
 import DocumentsPage from './pages/documents/DocumentsPage';
 import DocumentDetailPage from './pages/documents/DocumentDetailPage';
 import GradingPage from './pages/grading/GradingPage';
@@ -36,8 +36,8 @@ function App() {
           <Route element={<AppLayout />}>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/schemas" element={<SchemasPage />} />
-            <Route path="/schemas/:id" element={<SchemaDetailPage />} />
+            <Route path="/rubrics" element={<RubricsPage />} />
+            <Route path="/rubrics/:id" element={<RubricDetailPage />} />
             <Route path="/documents" element={<DocumentsPage />} />
             <Route path="/documents/:id" element={<DocumentDetailPage />} />
             <Route path="/grading/:documentId" element={<GradingPage />} />

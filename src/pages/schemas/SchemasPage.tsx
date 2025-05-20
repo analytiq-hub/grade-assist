@@ -3,34 +3,34 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FilePlus, Search, FileEdit, Trash2, MoreHorizontal } from 'lucide-react';
 import { format } from 'date-fns';
-import useSchemaStore from '../../store/schemaStore';
+import useRubricStore from '../../store/schemaStore';
 
-const SchemasPage: React.FC = () => {
-  const { schemas, loading, error, fetchSchemas } = useSchemaStore();
+const RubricsPage: React.FC = () => {
+  const { rubrics, loading, error, fetchRubrics } = useRubricStore();
   const [searchTerm, setSearchTerm] = useState('');
   
   useEffect(() => {
-    fetchSchemas();
-  }, [fetchSchemas]);
+    fetchRubrics();
+  }, [fetchRubrics]);
   
-  // Filter schemas based on search term
-  const filteredSchemas = schemas.filter(schema => 
-    schema.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    schema.description.toLowerCase().includes(searchTerm.toLowerCase())
+  // Filter rubrics based on search term
+  const filteredRubrics = rubrics.filter(rubric => 
+    rubric.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    rubric.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Grading Schemas</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Grading Rubrics</h1>
           <p className="text-gray-600 mt-1">Create and manage your grading rubrics</p>
         </div>
         
         <div className="mt-4 sm:mt-0">
-          <Link to="/schemas/new" className="btn btn-primary">
+          <Link to="/rubrics/new" className="btn btn-primary">
             <FilePlus size={18} />
-            New Schema
+            New Rubric
           </Link>
         </div>
       </div>
@@ -40,7 +40,7 @@ const SchemasPage: React.FC = () => {
         <div className="relative">
           <input
             type="text"
-            placeholder="Search schemas..."
+            placeholder="Search rubrics..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="form-input w-full pl-10"
@@ -49,7 +49,7 @@ const SchemasPage: React.FC = () => {
         </div>
       </div>
       
-      {/* Schemas list */}
+      {/* Rubrics list */}
       {loading ? (
         <div className="flex justify-center my-12">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
@@ -58,18 +58,18 @@ const SchemasPage: React.FC = () => {
         <div className="p-4 bg-red-50 border border-red-200 rounded-md text-red-700 mb-6">
           {error}
         </div>
-      ) : filteredSchemas.length === 0 ? (
+      ) : filteredRubrics.length === 0 ? (
         <div className="text-center my-12">
           <div className="mb-4">
             <FilePlus size={48} className="mx-auto text-gray-400" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No schemas found</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No rubrics found</h3>
           <p className="text-gray-600 mb-6">
-            {searchTerm ? 'No schemas match your search criteria' : 'Create your first grading schema to get started'}
+            {searchTerm ? 'No rubrics match your search criteria' : 'Create your first grading rubric to get started'}
           </p>
-          <Link to="/schemas/new" className="btn btn-primary inline-flex">
+          <Link to="/rubrics/new" className="btn btn-primary inline-flex">
             <FilePlus size={18} />
-            Create Schema
+            Create Rubric
           </Link>
         </div>
       ) : (
@@ -79,8 +79,8 @@ const SchemasPage: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          {filteredSchemas.map((schema) => (
-            <SchemaCard key={schema.id} schema={schema} />
+          {filteredRubrics.map((rubric) => (
+            <RubricCard key={rubric.id} rubric={rubric} />
           ))}
         </motion.div>
       )}
@@ -88,8 +88,8 @@ const SchemasPage: React.FC = () => {
   );
 };
 
-interface SchemaCardProps {
-  schema: {
+interface RubricCardProps {
+  rubric: {
     id: string;
     name: string;
     description: string;
@@ -98,7 +98,7 @@ interface SchemaCardProps {
   };
 }
 
-const SchemaCard: React.FC<SchemaCardProps> = ({ schema }) => {
+const RubricCard: React.FC<RubricCardProps> = ({ rubric }) => {
   const [showOptions, setShowOptions] = useState(false);
   
   return (
@@ -111,7 +111,7 @@ const SchemaCard: React.FC<SchemaCardProps> = ({ schema }) => {
     >
       <div className="p-5 flex-grow">
         <div className="flex justify-between items-start">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{schema.name}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{rubric.name}</h3>
           <div className="relative">
             <button 
               className="p-1 rounded-full hover:bg-gray-100"
@@ -123,31 +123,31 @@ const SchemaCard: React.FC<SchemaCardProps> = ({ schema }) => {
             {showOptions && (
               <div className="absolute right-0 mt-1 w-48 bg-white shadow-lg rounded-md border border-gray-200 py-1 z-10">
                 <Link 
-                  to={`/schemas/${schema.id}`}
+                  to={`/rubrics/${rubric.id}`}
                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   <FileEdit size={16} className="mr-2" />
-                  Edit Schema
+                  Edit Rubric
                 </Link>
                 <button className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
                   <Trash2 size={16} className="mr-2" />
-                  Delete Schema
+                  Delete Rubric
                 </button>
               </div>
             )}
           </div>
         </div>
         
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">{schema.description}</p>
+        <p className="text-gray-600 text-sm mb-4 line-clamp-3">{rubric.description}</p>
         
         <div className="text-xs text-gray-500">
-          Last updated: {format(new Date(schema.updated_at), 'MMM d, yyyy')}
+          Last updated: {format(new Date(rubric.updated_at), 'MMM d, yyyy')}
         </div>
       </div>
       
       <div className="border-t border-gray-200 p-4">
         <Link 
-          to={`/schemas/${schema.id}`}
+          to={`/rubrics/${rubric.id}`}
           className="text-blue-600 hover:text-blue-800 text-sm font-medium"
         >
           View Details →
@@ -157,4 +157,4 @@ const SchemaCard: React.FC<SchemaCardProps> = ({ schema }) => {
   );
 };
 
-export default SchemasPage;
+export default RubricsPage;

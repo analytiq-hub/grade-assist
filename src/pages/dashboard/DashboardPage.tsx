@@ -24,7 +24,7 @@ const DashboardPage: React.FC = () => {
       color: 'bg-yellow-100 text-yellow-700',
     },
     { 
-      title: 'Active Schemas', 
+      title: 'Active Rubrics', 
       value: 8, 
       change: 2, 
       icon: <FilePlus size={20} />,
@@ -71,9 +71,9 @@ const DashboardPage: React.FC = () => {
             <FileText size={18} />
             Upload Papers
           </Link>
-          <Link to="/schemas" className="btn btn-outline">
+          <Link to="/rubrics" className="btn btn-outline">
             <FilePlus size={18} />
-            New Schema
+            New Rubric
           </Link>
         </div>
       </div>

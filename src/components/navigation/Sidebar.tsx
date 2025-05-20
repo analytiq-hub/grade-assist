@@ -19,7 +19,7 @@ const Sidebar: React.FC = () => {
 
   const navItems = [
     { path: '/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
-    { path: '/schemas', icon: <FilePlus size={20} />, label: 'Schemas' },
+    { path: '/rubrics', icon: <FilePlus size={20} />, label: 'Rubrics' },
     { path: '/documents', icon: <FileText size={20} />, label: 'Documents' },
     { path: '/grading', icon: <CheckSquare size={20} />, label: 'Grading' },
     { path: '/collaborators', icon: <Users size={20} />, label: 'Collaborators' },

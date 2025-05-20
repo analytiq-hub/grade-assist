@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Save, ArrowLeft, Info } from 'lucide-react';
-import useSchemaStore from '../../store/schemaStore';
+import useRubricStore from '../../store/schemaStore';
 
-const SchemaDetailPage: React.FC = () => {
+const RubricDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const isNewSchema = id === 'new';
+  const isNewRubric = id === 'new';
   
-  const { currentSchema, loading, error, fetchSchema, createNewSchema, updateExistingSchema } = useSchemaStore();
+  const { currentRubric, loading, error, fetchRubric, createNewRubric, updateExistingRubric } = useRubricStore();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -21,28 +21,28 @@ const SchemaDetailPage: React.FC = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   
   useEffect(() => {
-    // If editing an existing schema, fetch it
-    if (!isNewSchema && id) {
-      fetchSchema(id);
+    // If editing an existing rubric, fetch it
+    if (!isNewRubric && id) {
+      fetchRubric(id);
     }
-  }, [fetchSchema, id, isNewSchema]);
+  }, [fetchRubric, id, isNewRubric]);
   
   useEffect(() => {
-    // Populate form with current schema data when available
-    if (currentSchema && !isNewSchema) {
+    // Populate form with current rubric data when available
+    if (currentRubric && !isNewRubric) {
       setFormData({
-        name: currentSchema.name,
-        description: currentSchema.description,
-        prompt: currentSchema.prompt,
+        name: currentRubric.name,
+        description: currentRubric.description,
+        prompt: currentRubric.prompt,
       });
     }
-  }, [currentSchema, isNewSchema]);
+  }, [currentRubric, isNewRubric]);
   
   const validateForm = () => {
     const errors: Record<string, string> = {};
     
     if (!formData.name.trim()) {
-      errors.name = 'Schema name is required';
+      errors.name = 'Rubric name is required';
     }
     
     if (!formData.description.trim()) {
@@ -69,14 +69,14 @@ const SchemaDetailPage: React.FC = () => {
     setIsSaving(true);
     
     try {
-      if (isNewSchema) {
-        const newSchema = await createNewSchema(formData);
-        navigate(`/schemas/${newSchema.id}`);
+      if (isNewRubric) {
+        const newRubric = await createNewRubric(formData);
+        navigate(`/rubrics/${newRubric.id}`);
       } else if (id) {
-        await updateExistingSchema(id, formData);
+        await updateExistingRubric(id, formData);
       }
     } catch (err) {
-      console.error('Error saving schema:', err);
+      console.error('Error saving rubric:', err);
     } finally {
       setIsSaving(false);
     }
@@ -92,7 +92,7 @@ const SchemaDetailPage: React.FC = () => {
     }
   };
   
-  if (loading && !isNewSchema) {
+  if (loading && !isNewRubric) {
     return (
       <div className="flex justify-center my-12">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
@@ -104,20 +104,20 @@ const SchemaDetailPage: React.FC = () => {
     <div>
       <div className="mb-8">
         <button 
-          onClick={() => navigate('/schemas')}
+          onClick={() => navigate('/rubrics')}
           className="flex items-center text-gray-600 hover:text-gray-900"
         >
           <ArrowLeft size={18} className="mr-1" />
-          Back to Schemas
+          Back to Rubrics
         </button>
       </div>
       
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
-          {isNewSchema ? 'Create New Schema' : `Edit Schema: ${currentSchema?.name}`}
+          {isNewRubric ? 'Create New Rubric' : `Edit Rubric: ${currentRubric?.name}`}
         </h1>
         <p className="text-gray-600 mt-1">
-          {isNewSchema 
+          {isNewRubric 
             ? 'Define how the AI should evaluate student submissions' 
             : 'Update your grading criteria and instructions'}
         </p>
@@ -136,12 +136,12 @@ const SchemaDetailPage: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
       >
         <div className="border-b border-gray-200 px-6 py-4">
-          <h2 className="text-lg font-semibold">Schema Information</h2>
+          <h2 className="text-lg font-semibold">Rubric Information</h2>
         </div>
         
         <div className="p-6">
           <div className="form-control">
-            <label htmlFor="name" className="form-label">Schema Name</label>
+            <label htmlFor="name" className="form-label">Rubric Name</label>
             <input
               id="name"
               name="name"
@@ -165,7 +165,7 @@ const SchemaDetailPage: React.FC = () => {
               onChange={handleChange}
               rows={3}
               className={`form-input ${formErrors.description ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
-              placeholder="A brief description of what this schema evaluates"
+              placeholder="A brief description of what this rubric evaluates"
             ></textarea>
             {formErrors.description && (
               <p className="mt-1 text-sm text-red-600">{formErrors.description}</p>
@@ -174,7 +174,7 @@ const SchemaDetailPage: React.FC = () => {
           
           <div className="form-control">
             <div className="flex items-center justify-between">
-              <label htmlFor="prompt" className="form-label">Grading Instructions (Prompt)</label>
+              <label htmlFor="prompt" className="form-label">Prompt Template</label>
               <button 
                 type="button"
                 className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
@@ -194,15 +194,9 @@ const SchemaDetailPage: React.FC = () => {
               name="prompt"
               value={formData.prompt}
               onChange={handleChange}
-              rows={10}
-              className={`form-input font-mono text-sm ${formErrors.prompt ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
-              placeholder="You are an expert grader for a biology lab report. Grade this report based on the following criteria:
-1. Introduction (20 points): Clear explanation of purpose and hypothesis
-2. Methods (20 points): Clearly described procedures that could be replicated
-3. Results (30 points): Well-organized data with appropriate charts/graphs
-4. Discussion (30 points): Thoughtful analysis linking results to scientific concepts
-
-For each section, provide specific feedback on strengths and areas for improvement. Include an overall score out of 100 points."
+              rows={4}
+              className={`form-input ${formErrors.prompt ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
+              placeholder="Instructions for the AI on how to grade using this rubric"
             ></textarea>
             {formErrors.prompt && (
               <p className="mt-1 text-sm text-red-600">{formErrors.prompt}</p>
@@ -226,7 +220,7 @@ For each section, provide specific feedback on strengths and areas for improveme
               ) : (
                 <>
                   <Save size={18} />
-                  {isNewSchema ? 'Create Schema' : 'Save Changes'}
+                  {isNewRubric ? 'Create Rubric' : 'Save Changes'}
                 </>
               )}
             </button>
@@ -237,4 +231,4 @@ For each section, provide specific feedback on strengths and areas for improveme
   );
 };
 
-export default SchemaDetailPage;
+export default RubricDetailPage;

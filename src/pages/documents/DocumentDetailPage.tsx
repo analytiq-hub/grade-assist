@@ -4,29 +4,29 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, FileText, Download, CheckSquare, File, Calendar, Tag, Info, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import useDocumentStore from '../../store/documentStore';
-import useSchemaStore from '../../store/schemaStore';
+import useRubricStore from '../../store/schemaStore';
 
 const DocumentDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   
   const { documents, fetchDocuments, gradeDocument } = useDocumentStore();
-  const { schemas, fetchSchemas } = useSchemaStore();
+  const { rubrics, fetchRubrics } = useRubricStore();
   
-  const [selectedSchemaId, setSelectedSchemaId] = useState<string>('');
+  const [selectedRubricId, setSelectedRubricId] = useState<string>('');
   const [isGrading, setIsGrading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
     fetchDocuments();
-    fetchSchemas();
-  }, [fetchDocuments, fetchSchemas]);
+    fetchRubrics();
+  }, [fetchDocuments, fetchRubrics]);
   
   const document = documents.find(doc => doc.id === id);
   
   const handleGradeDocument = async () => {
-    if (!id || !selectedSchemaId) {
-      setError('Please select a grading schema');
+    if (!id || !selectedRubricId) {
+      setError('Please select a grading rubric');
       return;
     }
     
@@ -34,7 +34,7 @@ const DocumentDetailPage: React.FC = () => {
     setIsGrading(true);
     
     try {
-      const result = await gradeDocument(id, selectedSchemaId);
+      const result = await gradeDocument(id, selectedRubricId);
       navigate(`/grading/${result.id}`);
     } catch (err) {
       console.error('Error grading document:', err);
@@ -158,17 +158,17 @@ const DocumentDetailPage: React.FC = () => {
               )}
               
               <div className="form-control">
-                <label htmlFor="schemaId" className="form-label">Select Grading Schema</label>
+                <label htmlFor="rubricId" className="form-label">Select Grading Rubric</label>
                 <select
-                  id="schemaId"
-                  value={selectedSchemaId}
-                  onChange={(e) => setSelectedSchemaId(e.target.value)}
+                  id="rubricId"
+                  value={selectedRubricId}
+                  onChange={(e) => setSelectedRubricId(e.target.value)}
                   className="form-select"
                 >
-                  <option value="">-- Select a schema --</option>
-                  {schemas.map(schema => (
-                    <option key={schema.id} value={schema.id}>
-                      {schema.name}
+                  <option value="">-- Select a rubric --</option>
+                  {rubrics.map(rubric => (
+                    <option key={rubric.id} value={rubric.id}>
+                      {rubric.name}
                     </option>
                   ))}
                 </select>
@@ -177,15 +177,15 @@ const DocumentDetailPage: React.FC = () => {
               <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md flex items-start gap-2">
                 <Info size={16} className="text-blue-600 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-blue-800">
-                  The AI will analyze this document based on your selected grading schema. You'll be able to review and adjust the results.
+                  The AI will analyze this document based on your selected grading rubric. You'll be able to review and adjust the results.
                 </p>
               </div>
               
               <div className="mt-6">
                 <button
                   onClick={handleGradeDocument}
-                  disabled={isGrading || !selectedSchemaId}
-                  className={`btn btn-primary w-full ${isGrading || !selectedSchemaId ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  disabled={isGrading || !selectedRubricId}
+                  className={`btn btn-primary w-full ${isGrading || !selectedRubricId ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
                   {isGrading ? (
                     <>
@@ -206,10 +206,10 @@ const DocumentDetailPage: React.FC = () => {
               
               <div className="mt-4">
                 <Link 
-                  to={schemas.length === 0 ? '/schemas/new' : '/schemas'}
+                  to={rubrics.length === 0 ? '/rubrics/new' : '/rubrics'}
                   className="text-sm text-blue-600 hover:text-blue-800 flex justify-center"
                 >
-                  {schemas.length === 0 ? 'Create a new schema first' : 'Manage grading schemas'}
+                  {rubrics.length === 0 ? 'Create a new rubric first' : 'Manage grading rubrics'}
                 </Link>
               </div>
             </div>
