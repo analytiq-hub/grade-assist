@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, FileText, Download, CheckSquare, File, Calendar, Tag, Info, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import useDocumentStore from '../../store/documentStore';
-import useRubricStore from '../../store/schemaStore';
+import useRubricStore from '../../store/rubricStore';
 
 const DocumentDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

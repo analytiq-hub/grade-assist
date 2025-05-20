@@ -38,9 +38,9 @@ const activities = [
   },
   {
     id: 5,
-    type: 'schema',
-    title: 'Physics Lab Report Schema',
-    description: 'Created new grading schema',
+    type: 'rubric',
+    title: 'Physics Lab Report Rubric',
+    description: 'Created new grading rubric',
     time: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
     icon: <FileCheck size={16} className="text-indigo-600" />,
   },

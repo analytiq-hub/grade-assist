@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FilePlus, Search, FileEdit, Trash2, MoreHorizontal } from 'lucide-react';
 import { format } from 'date-fns';
-import useRubricStore from '../../store/schemaStore';
+import useRubricStore from '../../store/rubricStore';
 
 const RubricsPage: React.FC = () => {
   const { rubrics, loading, error, fetchRubrics } = useRubricStore();

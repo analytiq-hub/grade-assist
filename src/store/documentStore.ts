@@ -10,7 +10,7 @@ interface DocumentState {
   // Actions
   fetchDocuments: () => Promise<void>;
   uploadNewDocument: (file: File) => Promise<Document>;
-  gradeDocument: (documentId: string, schemaId: string) => Promise<GradingResult>;
+  gradeDocument: (documentId: string, rubricId: string) => Promise<GradingResult>;
   getGradingResult: (id: string) => Promise<GradingResult>;
   updateGradingFeedback: (id: string, teacherFeedback: any, score?: number) => Promise<GradingResult>;
 }
@@ -48,10 +48,10 @@ const useDocumentStore = create<DocumentState>((set, get) => ({
     }
   },
   
-  gradeDocument: async (documentId: string, schemaId: string) => {
+  gradeDocument: async (documentId: string, rubricId: string) => {
     set({ loading: true, error: null });
     try {
-      const result = await gradeDocument(documentId, schemaId);
+      const result = await gradeDocument(documentId, rubricId);
       set((state) => ({ 
         gradingResults: { ...state.gradingResults, [result.id]: result },
         loading: false 

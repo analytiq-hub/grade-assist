@@ -72,7 +72,7 @@ export interface Rubric {
 export interface GradingResult {
   id: string;
   document_id: string;
-  schema_id: string;
+  rubric_id: string;
   created_at: string;
   updated_at: string;
   status: 'pending' | 'completed' | 'failed';
@@ -137,7 +137,7 @@ export const updateRubric = async (id: string, rubric: Partial<Rubric>): Promise
 export const gradeDocument = async (documentId: string, rubricId: string): Promise<GradingResult> => {
   const response = await apiClient.post('/grading', {
     document_id: documentId,
-    schema_id: rubricId,
+    rubric_id: rubricId,
   });
   return response.data;
 };
