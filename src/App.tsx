@@ -40,6 +40,7 @@ function App() {
             <Route path="/rubrics/:id" element={<RubricDetailPage />} />
             <Route path="/documents" element={<DocumentsPage />} />
             <Route path="/documents/:id" element={<DocumentDetailPage />} />
+            <Route path="/grading" element={<GradingPage />} />
             <Route path="/grading/:documentId" element={<GradingPage />} />
             <Route path="/collaborators" element={<CollaboratorsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
