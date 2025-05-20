@@ -12,6 +12,10 @@ import {
 } from '../../services/docRouterService';
 
 const SettingsPage: React.FC = () => {
+  const envApiToken = import.meta.env.VITE_DOCROUTER_API_TOKEN as string | undefined;
+  const envOrgId = import.meta.env.VITE_DOCROUTER_ORG_ID as string | undefined;
+  const envApiBaseUrl = import.meta.env.VITE_DOCROUTER_API_BASE_URL as string | undefined;
+
   const [apiToken, setApiToken] = useState('');
   const [orgId, setOrgId] = useState('');
   const [apiBaseUrl, setApiBaseUrl] = useState('');
@@ -22,9 +26,13 @@ const SettingsPage: React.FC = () => {
   const [testResult, setTestResult] = useState<'success' | 'error' | null>(null);
 
   useEffect(() => {
-    setApiToken(getDocRouterToken());
-    setOrgId(getDocRouterOrgId());
-    setApiBaseUrl(getDocRouterApiBaseUrl());
+    // Prefer localStorage, fallback to .env
+    const storedToken = getDocRouterToken();
+    setApiToken(storedToken || envApiToken || '');
+    const storedOrgId = getDocRouterOrgId();
+    setOrgId(storedOrgId || envOrgId || '');
+    const storedApiBaseUrl = getDocRouterApiBaseUrl();
+    setApiBaseUrl(storedApiBaseUrl || envApiBaseUrl || '');
   }, []);
 
   const handleSaveSettings = async (e: React.FormEvent) => {
@@ -62,7 +70,6 @@ const SettingsPage: React.FC = () => {
     setIsTesting(true);
     setTestResult(null);
     setAuthToken(apiToken);
-    // testDocRouterConnection uses the current base URL from localStorage, so update it first
     setDocRouterApiBaseUrl(apiBaseUrl);
     setDocRouterOrgId(orgId);
     const ok = await testDocRouterConnection(orgId);

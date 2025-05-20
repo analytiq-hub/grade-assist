@@ -1,8 +1,5 @@
 import axios from 'axios';
 
-// DocRouter API endpoints
-const DEFAULT_API_BASE_URL = 'https://app.docrouter.ai/fastapi';
-
 // Set the DocRouter API token (persists in localStorage)
 export const setDocRouterToken = (token: string) => {
   localStorage.setItem('docrouter_token', token);
@@ -28,9 +25,9 @@ export const setDocRouterApiBaseUrl = (url: string) => {
   localStorage.setItem('docrouter_api_base_url', url);
 };
 
-// Get the DocRouter API base URL from localStorage, fallback to default
+// Get the DocRouter API base URL from localStorage, fallback to .env, then hardcoded
 export const getDocRouterApiBaseUrl = (): string => {
-  return localStorage.getItem('docrouter_api_base_url') || DEFAULT_API_BASE_URL;
+  return localStorage.getItem('docrouter_api_base_url') || '';
 };
 
 // API client with authentication
