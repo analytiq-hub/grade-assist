@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   FilePlus, 
@@ -15,7 +15,6 @@ import { motion } from 'framer-motion';
 
 const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const location = useLocation();
 
   const navItems = [
     { path: '/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
@@ -47,18 +46,10 @@ const Sidebar: React.FC = () => {
           {navItems.map((item) => (
             <li key={item.path}>
               <NavLink
-                to={item.path.endsWith('/grading') ? '#' : item.path}
-                onClick={(e) => {
-                  if (item.path.endsWith('/grading')) {
-                    e.preventDefault();
-                  }
-                }}
+                to={item.path}
                 className={({ isActive }) => `
                   flex items-center gap-3 px-3 py-2 rounded-md transition-colors duration-200
-                  ${isActive || (item.path.endsWith('/grading') && location.pathname.includes('/grading/')) ? 
-                    'bg-blue-50 text-blue-700' : 
-                    'text-gray-700 hover:bg-gray-100'
-                  }
+                  ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'}
                   ${collapsed ? 'justify-center' : ''}
                 `}
               >
