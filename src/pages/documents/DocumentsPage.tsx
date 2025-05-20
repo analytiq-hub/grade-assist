@@ -52,7 +52,7 @@ const DocumentsPage: React.FC = () => {
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Documents</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Papers</h1>
           <p className="text-gray-600 mt-1">Upload and manage student papers</p>
         </div>
       </div>

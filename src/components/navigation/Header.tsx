@@ -18,8 +18,8 @@ const Header: React.FC = () => {
       return 'Grading Rubrics';
     }
     if (path.includes('/documents')) {
-      if (path.includes('/documents/')) return 'Document Details';
-      return 'Documents';
+      if (path.includes('/documents/')) return 'Paper Details';
+      return 'Papers';
     }
     if (path.includes('/grading')) return 'Grading';
     if (path.includes('/collaborators')) return 'Collaborators';
