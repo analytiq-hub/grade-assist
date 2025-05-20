@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Save, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { getDocRouterToken, setDocRouterToken } from '../../services/docRouterService';
+import { setAuthToken, testDocRouterConnection } from '../../services/openapi-client';
+import { getDocRouterToken, setDocRouterToken, getDocRouterOrgId } from '../../services/docRouterService';
 
 const SettingsPage: React.FC = () => {
   const [apiToken, setApiToken] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [showTokenError, setShowTokenError] = useState(false);
+  const [isTesting, setIsTesting] = useState(false);
+  const [testResult, setTestResult] = useState<'success' | 'error' | null>(null);
 
   useEffect(() => {
     // Load the saved token
@@ -27,7 +28,6 @@ const SettingsPage: React.FC = () => {
     }
     
     setShowTokenError(false);
-    setIsSaving(true);
     
     try {
       // In a real app, you would validate the token here
@@ -35,17 +35,24 @@ const SettingsPage: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 1000)); // simulate API call
       
       setDocRouterToken(apiToken);
-      setShowSuccess(true);
-      
-      // Hide success message after 3 seconds
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
     } catch (error) {
       console.error('Error saving token:', error);
-    } finally {
-      setIsSaving(false);
     }
+  };
+
+  const handleTestConnection = async () => {
+    setIsTesting(true);
+    setTestResult(null);
+    setAuthToken(apiToken);
+    const orgId = getDocRouterOrgId();
+    if (!orgId) {
+      setTestResult('error');
+      setIsTesting(false);
+      return;
+    }
+    const ok = await testDocRouterConnection(orgId);
+    setTestResult(ok ? 'success' : 'error');
+    setIsTesting(false);
   };
 
   return (
@@ -98,36 +105,30 @@ const SettingsPage: React.FC = () => {
                   )}
                 </div>
                 
-                <div className="mt-6 flex items-center">
+                <div className="mt-6 flex items-center gap-4">
                   <button
-                    type="submit"
-                    disabled={isSaving}
-                    className={`btn btn-primary ${isSaving ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    type="button"
+                    onClick={handleTestConnection}
+                    disabled={isTesting}
+                    className={`btn btn-secondary ${isTesting ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
-                    {isSaving ? (
+                    {isTesting ? (
                       <>
                         <svg className="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        Saving...
+                        Testing...
                       </>
                     ) : (
-                      <>
-                        <Save size={18} />
-                        Save API Token
-                      </>
+                      <>Test DocRouter Connection</>
                     )}
                   </button>
-                  
-                  {showSuccess && (
-                    <motion.p 
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="ml-4 text-sm text-green-600"
-                    >
-                      API token saved successfully
-                    </motion.p>
+                  {testResult === 'success' && (
+                    <span className="text-green-600 text-sm">Connection successful!</span>
+                  )}
+                  {testResult === 'error' && (
+                    <span className="text-red-600 text-sm">Connection failed. Check your token.</span>
                   )}
                 </div>
               </form>

@@ -1,23 +1,40 @@
 import axios from 'axios';
 
 // DocRouter API endpoints
-const API_BASE_URL = 'https://api.docrouter.ai';
+const API_BASE_URL = 'https://app.docrouter.ai/fastapi';
 
-// This would typically come from environment variables
-let API_TOKEN = '';
+// Get API token from environment variable (Vite convention: VITE_DOCROUTER_API_TOKEN)
+// Fallback to localStorage for runtime overrides (e.g., user input in settings)
+const ENV_API_TOKEN = import.meta.env.VITE_DOCROUTER_API_TOKEN as string | undefined;
 
-// Set the DocRouter API token
+// Get organization ID from environment variable (Vite convention: VITE_DOCROUTER_ORG_ID)
+// Fallback to localStorage for runtime overrides
+const ENV_ORG_ID = import.meta.env.VITE_DOCROUTER_ORG_ID as string | undefined;
+
+// Set the DocRouter API token (overrides env, persists in localStorage)
 export const setDocRouterToken = (token: string) => {
-  API_TOKEN = token;
   localStorage.setItem('docrouter_token', token);
 };
 
-// Get the saved DocRouter API token
+// Get the saved DocRouter API token, preferring env variable if set
 export const getDocRouterToken = (): string => {
-  if (!API_TOKEN) {
-    API_TOKEN = localStorage.getItem('docrouter_token') || '';
+  if (ENV_API_TOKEN && ENV_API_TOKEN.length > 0) {
+    return ENV_API_TOKEN;
   }
-  return API_TOKEN;
+  return localStorage.getItem('docrouter_token') || '';
+};
+
+// Set organization ID (overrides env, persists in localStorage)
+export const setDocRouterOrgId = (orgId: string) => {
+  localStorage.setItem('docrouter_org_id', orgId);
+};
+
+// Get organization ID from env or localStorage
+export const getDocRouterOrgId = (): string => {
+  if (ENV_ORG_ID && ENV_ORG_ID.length > 0) {
+    return ENV_ORG_ID;
+  }
+  return localStorage.getItem('docrouter_org_id') || '';
 };
 
 // API client with authentication
@@ -87,10 +104,10 @@ export const uploadDocument = async (file: File): Promise<Document> => {
   return response.data;
 };
 
-// Get all documents
-export const getDocuments = async (): Promise<Document[]> => {
-  const response = await apiClient.get('/documents');
-  return response.data;
+// Get all documents (requires orgId)
+export const getDocuments = async (organizationId: string): Promise<Document[]> => {
+  const response = await apiClient.get(`/v0/orgs/${organizationId}/documents`);
+  return response.data.documents;
 };
 
 // Get a specific document
@@ -147,9 +164,24 @@ export const updateGradingResult = async (
   return response.data;
 };
 
+// Test the DocRouter API connection and token/org validity
+export const testDocRouterConnection = async (): Promise<boolean> => {
+  try {
+    const orgId = getDocRouterOrgId();
+    if (!orgId) throw new Error('No organization ID set');
+    await getDocuments(orgId);
+    return true;
+  } catch (error) {
+    console.error('DocRouter connection test failed:', error);
+    return false;
+  }
+};
+
 export default {
   setDocRouterToken,
   getDocRouterToken,
+  setDocRouterOrgId,
+  getDocRouterOrgId,
   uploadDocument,
   getDocuments,
   getDocument,
@@ -160,4 +192,5 @@ export default {
   gradeDocument,
   getGradingResult,
   updateGradingResult,
+  testDocRouterConnection,
 };
